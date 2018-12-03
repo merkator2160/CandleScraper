@@ -264,7 +264,3 @@ paket-files/
 __pycache__/
 *.pyc
 
-**/appsettings.Development.json
-**/appsettings.Production.json
-/ngrok/ngrok.exe
-
