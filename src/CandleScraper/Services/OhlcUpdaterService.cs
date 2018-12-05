@@ -17,12 +17,12 @@ namespace CandleScraper.Services
 {
 	public class OhlcUpdaterService : IOhlcUpdaterService
 	{
-		private readonly IRepositoryBundle _unitOfWork;
+		private readonly IRepositoryBundle _repositoryBundle;
 
 
-		public OhlcUpdaterService(IRepositoryBundle unitOfWork)
+		public OhlcUpdaterService(IRepositoryBundle repositoryBundle)
 		{
-			_unitOfWork = unitOfWork;
+			_repositoryBundle = repositoryBundle;
 		}
 
 
@@ -63,7 +63,7 @@ namespace CandleScraper.Services
 					if(!x.IsProperlyCollected)
 						continue;
 
-					var existingOhlc = await _unitOfWork.Ohlcs.GetCryptoDailyOhlcFilteredAsync(new StatDateFilterDb()
+					var existingOhlc = await _repositoryBundle.Ohlcs.GetCryptoDailyOhlcFilteredAsync(new StatDateFilterDb()
 					{
 						AssetId = x.AssetId,
 						TimeOpenStart = x.HistoricalData.TimeOpen.Value,
@@ -72,7 +72,7 @@ namespace CandleScraper.Services
 
 					if(existingOhlc != null && existingOhlc.Length == 0)
 					{
-						await _unitOfWork.Ohlcs.AddAsync(new OhlcDb()
+						await _repositoryBundle.Ohlcs.AddAsync(new OhlcDb()
 						{
 							AssetId = x.AssetId,
 							TimeOpen = x.HistoricalData.TimeOpen.Value,
@@ -87,7 +87,7 @@ namespace CandleScraper.Services
 							MaxSupply = x.CoinSummary.MaxSupply
 						});
 #if DEBUG
-						Console.WriteLine($"{DateTime.Now} | Added new OHLC for Currency: {x.AssetName} and TimeOpen: {x.HistoricalData.TimeOpen.Value.FromPosixTimeMs():G}");
+						Console.WriteLine($"Added new OHLC for Currency: {x.AssetName} and TimeOpen: {x.HistoricalData.TimeOpen.Value.FromPosixTimeMs():G}");
 #endif
 					}
 				}

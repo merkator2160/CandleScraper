@@ -23,35 +23,43 @@ namespace CandleScraper.Database.Repositories
 		// IRepository ////////////////////////////////////////////////////////////////////////////
 		public TEntity Get(String id)
 		{
-			return _collection.Find(new BsonDocument("_id", new ObjectId(id))).FirstOrDefault();
+			return Get(new ObjectId(id));
+		}
+		public TEntity Get(ObjectId id)
+		{
+			return _collection.Find(p => p.Id.Equals(id)).FirstOrDefault();
 		}
 		public async Task<TEntity> GetAsync(String id)
 		{
-			return await (await _collection.FindAsync(new BsonDocument("_id", new ObjectId(id)))).FirstOrDefaultAsync();
+			return await GetAsync(new ObjectId(id));
+		}
+		public async Task<TEntity> GetAsync(ObjectId id)
+		{
+			return await (await _collection.FindAsync(p => p.Id.Equals(id))).FirstOrDefaultAsync();
 		}
 		public TEntity[] GetAll()
 		{
-			return _collection.Find(new BsonDocument()).ToList().ToArray();
+			return _collection.Find(FilterDefinition<TEntity>.Empty).ToList().ToArray();
 		}
 		public async Task<TEntity[]> GetAllAsync()
 		{
-			return (await (await _collection.FindAsync(new BsonDocument())).ToListAsync()).ToArray();
+			return (await (await _collection.FindAsync(FilterDefinition<TEntity>.Empty)).ToListAsync()).ToArray();
 		}
 		public TEntity[] GetChunked(Int32 offset, Int32 amount)
 		{
-			return _collection.Find(new BsonDocument()).Skip(offset).Limit(amount).ToList().ToArray();
+			return _collection.Find(FilterDefinition<TEntity>.Empty).Skip(offset).Limit(amount).ToList().ToArray();
 		}
 		public async Task<TEntity[]> GetChunkedAsync(Int32 offset, Int32 amount)
 		{
-			return (await _collection.AsQueryable().Skip(offset).Take(amount).ToListAsync()).ToArray();
+			return (await _collection.Find(FilterDefinition<TEntity>.Empty).Skip(offset).Limit(amount).ToListAsync()).ToArray();
 		}
 		public Int64 GetQuantity()
 		{
-			return _collection.CountDocuments(new BsonDocument());
+			return _collection.CountDocuments(FilterDefinition<TEntity>.Empty);
 		}
 		public async Task<Int64> GetQuantityAsync()
 		{
-			return await _collection.CountDocumentsAsync(new BsonDocument());
+			return await _collection.CountDocumentsAsync(FilterDefinition<TEntity>.Empty);
 		}
 		public void Add(TEntity item)
 		{
@@ -71,23 +79,35 @@ namespace CandleScraper.Database.Repositories
 		}
 		public void Update(TEntity item)
 		{
-			_collection.ReplaceOne(new BsonDocument("_id", item.Id), item);
+			_collection.ReplaceOne(p => p.Id.Equals(item.Id), item);
+		}
+		public async Task UpdateAsync(TEntity item)
+		{
+			await _collection.ReplaceOneAsync(p => p.Id.Equals(item.Id), item);
 		}
 		public void Delete(String id)
 		{
-			_collection.DeleteOne(new BsonDocument("_id", new ObjectId(id)));
+			Delete(new ObjectId(id));
+		}
+		public void Delete(ObjectId id)
+		{
+			_collection.DeleteOne(p => p.Id.Equals(id));
 		}
 		public async Task DeleteAsync(String id)
 		{
-			await _collection.DeleteOneAsync(new BsonDocument("_id", new ObjectId(id)));
+			await DeleteAsync(new ObjectId(id));
+		}
+		public async Task DeleteAsync(ObjectId id)
+		{
+			await _collection.DeleteOneAsync(p => p.Id.Equals(id));
 		}
 		public void Remove(TEntity item)
 		{
-			_collection.DeleteOne(new BsonDocument("_id", item.Id));
+			_collection.DeleteOne(p => p.Id.Equals(item.Id));
 		}
 		public async Task RemoveAsync(TEntity item)
 		{
-			await _collection.DeleteOneAsync(new BsonDocument("_id", item.Id));
+			await _collection.DeleteOneAsync(p => p.Id.Equals(item.Id));
 		}
 		public void RemoveRange(IEnumerable<TEntity> items)
 		{
@@ -97,7 +117,7 @@ namespace CandleScraper.Database.Repositories
 		public async Task RemoveRangeAsync(IEnumerable<TEntity> items)
 		{
 			var ids = items.Select(p => p.Id).ToArray();
-			await _collection.DeleteOneAsync(p => ids.Contains(p.Id));
+			await _collection.DeleteManyAsync(p => ids.Contains(p.Id));
 		}
 	}
 }

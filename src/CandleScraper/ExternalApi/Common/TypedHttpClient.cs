@@ -1,5 +1,6 @@
 ﻿using CandleScraper.ExternalApi.Common.Exceptions;
 using CandleScraper.ExternalApi.Common.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 using Newtonsoft.Json;
 using System;
 using System.IO;

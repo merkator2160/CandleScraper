@@ -2,6 +2,7 @@
 using CandleScraper.Core.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
+using System;
 using System.Reflection;
 using Module = Autofac.Module;
 
@@ -9,6 +10,7 @@ namespace CandleScraper.Database.DependencyInjection
 {
 	public class DatabaseModule : Module
 	{
+		private const String _defaultDbConnectionName = "MongoDbConnection";
 		private readonly IConfiguration _configuration;
 		private readonly Assembly _currentAssembly;
 

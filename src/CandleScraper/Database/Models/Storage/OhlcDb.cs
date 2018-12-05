@@ -7,6 +7,7 @@ namespace CandleScraper.Database.Models.Storage
 	public class OhlcDb : IStorageEntity
 	{
 		public ObjectId Id { get; set; }
+		public ObjectId AssetId { get; set; }
 
 		/// <summary>
 		/// Opening price in USD
@@ -57,15 +58,5 @@ namespace CandleScraper.Database.Models.Storage
 		/// Maximum possible coins that can exist.
 		/// </summary>
 		public Double? MaxSupply { get; set; }
-
-		/// <summary>
-		/// Return = Rate of Change = (current Close / last Close) - 1
-		/// </summary>
-		public Double? Return { get; set; }
-
-		public Int64 AssetMetricCalculationDate { get; set; }
-
-
-		public ObjectId AssetId { get; set; }
 	}
 }

@@ -38,7 +38,7 @@ namespace CandleScraper.ExternalApi.CoinMarketCapPro
 
 		// ICoinMarketCapProClient ////////////////////////////////////////////////////////////////
 		/// <summary>
-		/// Not an official endpoint for CoinMarketCap Pro API
+		/// Not an official endpoint of CoinMarketCap Pro API
 		/// </summary>
 		public async Task<CmcpAvailableSupplyApi> GetSupplyData(String slug, Int64 start, Int64 end)
 		{
@@ -91,6 +91,15 @@ namespace CandleScraper.ExternalApi.CoinMarketCapPro
 					throw new RequestExecutionApiException($"CMCP-API error: {ex.Message}", ex);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Returns all static metadata for one or more cryptocurrencies including name, symbol, logo, and its various registered URLs.
+		/// </summary>
+		/// <param name="id">One or more CoinMarketCap cryptocurrency IDs. Example: "1,2"</param>
+		public async Task<CmcpCryptocurrencyInfoApi> GetCryptocurrencyInfoAsync(Int64[] id)
+		{
+			return await GetCryptocurrencyInfoAsync(id, null);
 		}
 
 		/// <summary>

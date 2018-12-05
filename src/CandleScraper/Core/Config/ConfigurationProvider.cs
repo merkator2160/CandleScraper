@@ -6,7 +6,7 @@ namespace CandleScraper.Core.Config
 {
 	public static class ConfigurationProvider
 	{
-		public const String _defaultEnvironmentVariableName = "ENVIRONMENT";
+		private const String _defaultEnvironmentVariableName = "ENVIRONMENT";
 
 
 		// FUNCTIONS //////////////////////////////////////////////////////////////////////////////
