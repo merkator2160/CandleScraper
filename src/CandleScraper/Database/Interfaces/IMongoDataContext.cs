@@ -6,6 +6,6 @@ namespace CandleScraper.Database.Interfaces
 	public interface IDataContext
 	{
 		IMongoCollection<AssetDb> Assets { get; }
-		IMongoCollection<OhlcDb> Ohlcs { get; }
+		IMongoCollection<DailyOhlcDb> Ohlcs { get; }
 	}
 }

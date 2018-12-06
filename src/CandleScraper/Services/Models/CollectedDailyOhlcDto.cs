@@ -5,7 +5,7 @@ namespace CandleScraper.Services.Models
 {
 	public class CollectedDailyOhlcDto
 	{
-		public Boolean IsProperlyCollected => CoinSummary.IsProperlyCollected && HistoricalData.IsProperlyCollected && AssetId != ObjectId.Empty;
+		public Boolean IsProperlyCollected => HistoricalData.IsProperlyCollected && AssetId != ObjectId.Empty;
 
 		public ObjectId AssetId { get; set; }
 		public String AssetName { get; set; }

@@ -1,4 +1,6 @@
 ﻿using Autofac;
+using CandleScraper.Core.AutoMapper;
+using CandleScraper.Core.Config;
 using CandleScraper.Core.DependencyInjection;
 using CandleScraper.Database.DependencyInjection;
 using CandleScraper.ExternalApi.DependencyInjection;
@@ -16,7 +18,7 @@ namespace CandleScraper
 		}
 		private static async Task MainAsync(String[] args)
 		{
-			var configuration = Core.Config.ConfigurationProvider.CollectEnvironmentRelatedConfiguration();
+			var configuration = CustomConfigurationProvider.CollectEnvironmentRelatedConfiguration();
 			using(var container = CreateContainer(configuration))
 			{
 				var context = container.Resolve<ApplicationContext>();
@@ -36,6 +38,7 @@ namespace CandleScraper
 			builder.RegisterLocalConfiguration(configuration);
 
 			builder.RegisterModule<ExternalApiClientModule>();
+			builder.RegisterModule<AutoMapperModule>();
 			builder.RegisterModule(new DatabaseModule(configuration));
 
 			return builder.Build();

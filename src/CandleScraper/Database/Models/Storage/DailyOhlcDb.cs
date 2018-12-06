@@ -4,7 +4,7 @@ using System;
 
 namespace CandleScraper.Database.Models.Storage
 {
-	public class OhlcDb : IStorageEntity
+	public class DailyOhlcDb : IStorageEntity
 	{
 		public ObjectId Id { get; set; }
 		public ObjectId AssetId { get; set; }

@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace CandleScraper.Database.Interfaces
 {
-	public interface IOhlcRepository : IRepository<OhlcDb>
+	public interface IOhlcRepository : IRepository<DailyOhlcDb>
 	{
-		Task<OhlcDb[]> GetCryptoDailyOhlcFilteredAsync(StatDateFilterDb filter);
+		Task<DailyOhlcDb[]> GetCryptoDailyOhlcFilteredAsync(GetCryptoDailyOhlcFilterDb filter);
 	}
 }

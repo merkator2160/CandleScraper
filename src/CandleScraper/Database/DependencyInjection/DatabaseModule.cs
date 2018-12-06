@@ -31,17 +31,21 @@ namespace CandleScraper.Database.DependencyInjection
 		}
 		public void RegisterContext(ContainerBuilder builder)
 		{
-			builder.RegisterInstance(new MongoClient(_configuration.GetConnectionString("MongoDbConnection")))
+			builder.RegisterInstance(new MongoClient(_configuration.GetConnectionString(_defaultDbConnectionName)))
 				.AsImplementedInterfaces()
 				.SingleInstance();
 
-			builder.RegisterType<DataContext>();
+			builder.RegisterType<DataContext>()
+				.AsSelf()
+				.AsImplementedInterfaces();
 		}
 		public void RegisterRepositories(ContainerBuilder builder)
 		{
 			builder
 				.RegisterAssemblyTypes(_currentAssembly)
-				.Where(t => t.Name.EndsWith("Repository"));
+				.Where(t => t.Name.EndsWith("Repository"))
+				.AsSelf()
+				.AsImplementedInterfaces();
 
 			builder
 				.RegisterType<RepositoryBundle>()

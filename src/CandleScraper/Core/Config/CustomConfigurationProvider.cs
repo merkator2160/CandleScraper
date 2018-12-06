@@ -4,7 +4,7 @@ using System.IO;
 
 namespace CandleScraper.Core.Config
 {
-	public static class ConfigurationProvider
+	public static class CustomConfigurationProvider
 	{
 		private const String _defaultEnvironmentVariableName = "ENVIRONMENT";
 

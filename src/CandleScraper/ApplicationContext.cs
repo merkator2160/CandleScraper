@@ -9,27 +9,27 @@ using System.Threading.Tasks;
 
 namespace CandleScraper
 {
-	internal class ApplicationContext
+	internal class ApplicationContext : IDisposable
 	{
-		private readonly IContainer _container;
+		private readonly ILifetimeScope _lifetimeScope;
 
 
-		public ApplicationContext(IContainer container)
+		public ApplicationContext(ILifetimeScope lifetimeScope)
 		{
-			_container = container;
+			_lifetimeScope = lifetimeScope;
 		}
 
 
 		// FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////
 		public async Task RunAsync()
 		{
-			await CollectCryptoCurrencyAssetsAsync();
-			//await ScrapeOhlcsAsync();
+			//await CollectCryptoCurrencyAssetsAsync();
+			await ScrapeOhlcsAsync();
 		}
 		private async Task CollectCryptoCurrencyAssetsAsync()
 		{
 			Console.WriteLine("Updating currency assets");
-			using(var scope = _container.BeginLifetimeScope())
+			using(var scope = _lifetimeScope.BeginLifetimeScope())
 			{
 				var assetUpdaterService = scope.Resolve<IAssetUpdaterService>();
 				var cryptoMaps = await assetUpdaterService.CollectCryptoCurrencyMapAsync();
@@ -42,7 +42,7 @@ namespace CandleScraper
 					var assets = await assetUpdaterService.CollectCryptoCurrencyAssetInfoAsync(chunkedIds);
 					await assetUpdaterService.AddOrUpdateDatabaseAssetsAsync(assets);
 
-					Console.WriteLine($"Fetched Coin Market Cap assets {i} from {ids.Length}");
+					Console.WriteLine($"Fetched Coin Market Cap assets {i + chunkedIds.Length} from {ids.Length}");
 					Thread.Sleep(TimeSpan.FromSeconds(45));    // To prevent API 429 Too Many Requests because of starter plan
 				}
 			}
@@ -54,7 +54,7 @@ namespace CandleScraper
 			var endDate = DateTime.UtcNow.AddDays(1);   // query for future 1 day. No data will be returned for tomorrow's date, but this is +1 day is a buffer
 
 			ParallelOhlcScrapingRequestDto[] allCryptoAssetDb;
-			using(var scope = _container.BeginLifetimeScope())
+			using(var scope = _lifetimeScope.BeginLifetimeScope())
 			{
 				var assetCount = 0;
 				var unitOfWork = scope.Resolve<IRepositoryBundle>();
@@ -82,10 +82,17 @@ namespace CandleScraper
 		}
 
 
+		// IDisposable ////////////////////////////////////////////////////////////////////////////
+		public void Dispose()
+		{
+			_lifetimeScope?.Dispose();
+		}
+
+
 		// THREADS ////////////////////////////////////////////////////////////////////////////////
 		private void ScrapeOhlcParallelLinqThread(ParallelOhlcScrapingRequestDto request)
 		{
-			using(var scope = _container.BeginLifetimeScope())
+			using(var scope = _lifetimeScope.BeginLifetimeScope())
 			{
 				Console.WriteLine($"Currency: {request.Asset.Name} \t| Asset: {request.SequenceNumber} from {request.TotalNumber}");
 

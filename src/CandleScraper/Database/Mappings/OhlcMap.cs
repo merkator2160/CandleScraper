@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace CandleScraper.Database.Mappings
 {
-	public class OhlcMap : BsonClassMap<OhlcDb>
+	public class OhlcMap : BsonClassMap<DailyOhlcDb>
 	{
 		public OhlcMap()
 		{

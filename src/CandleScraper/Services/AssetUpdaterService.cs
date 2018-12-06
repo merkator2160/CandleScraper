@@ -1,12 +1,13 @@
-﻿using CandleScraper.Database.Interfaces;
+﻿using AutoMapper;
+using CandleScraper.Database.Interfaces;
 using CandleScraper.Database.Models.Storage;
 using CandleScraper.ExternalApi.CoinMarketCapPro.Enums;
 using CandleScraper.ExternalApi.CoinMarketCapPro.Interfaces;
 using CandleScraper.ExternalApi.CoinMarketCapPro.Models;
 using CandleScraper.Services.Interfaces;
+using CandleScraper.Services.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CandleScraper.Services
@@ -15,14 +16,17 @@ namespace CandleScraper.Services
 	{
 		private readonly ICoinMarketCapProClient _coinMarketCapProClient;
 		private readonly IRepositoryBundle _repositoryBundle;
+		private readonly IMapper _mapper;
 
 
 		public AssetUpdaterService(
 			ICoinMarketCapProClient coinMarketCapProClient,
-			IRepositoryBundle repositoryBundle)
+			IRepositoryBundle repositoryBundle,
+			IMapper mapper)
 		{
 			_coinMarketCapProClient = coinMarketCapProClient;
 			_repositoryBundle = repositoryBundle;
+			_mapper = mapper;
 		}
 
 
@@ -49,7 +53,7 @@ namespace CandleScraper.Services
 
 			return cryptoMapsData.ToArray();
 		}
-		public async Task<AssetDb[]> CollectCryptoCurrencyAssetInfoAsync(Int64[] cryptoMapIds)
+		public async Task<AssetDto[]> CollectCryptoCurrencyAssetInfoAsync(Int64[] cryptoMapIds)
 		{
 			var assetList = new List<AssetDb>();
 
@@ -69,25 +73,16 @@ namespace CandleScraper.Services
 				assetList.Add(asset);
 			}
 
-			return assetList.ToArray();
+			return _mapper.Map<AssetDto[]>(assetList);
 		}
-		public async Task AddOrUpdateDatabaseAssetsAsync(AssetDb[] assets)
+		public async Task AddOrUpdateDatabaseAssetsAsync(AssetDto[] assets)
 		{
-			var workingStep = 100;
-			for(var i = 0; i < assets.Length; i = i + workingStep)      // Must chunck because EF execution time is long
+			foreach(var x in assets)
 			{
-				var selectedAssets = assets.Skip(i).Take(workingStep).ToArray();
-				foreach(var x in selectedAssets)
+				var assetDb = await _repositoryBundle.Assets.GetByCoinMarketCapAssetIdAsync(x.CoinMarketCapAssetId);
+				if(assetDb == null)
 				{
-					var assetDb = await _repositoryBundle.Assets.GetByCoinMarketCapAssetIdAsync(x.CoinMarketCapAssetId);
-					if(assetDb == null)
-					{
-						await _repositoryBundle.Assets.AddAsync(x);
-					}
-					else
-					{
-						_repositoryBundle.Assets.Update(assetDb);
-					}
+					await _repositoryBundle.Assets.AddAsync(_mapper.Map<AssetDb>(x));
 				}
 			}
 		}

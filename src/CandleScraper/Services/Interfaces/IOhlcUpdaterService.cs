@@ -7,7 +7,7 @@ namespace CandleScraper.Services.Interfaces
 {
 	public interface IOhlcUpdaterService
 	{
-		CollectedDailyOhlcDto[] ScrapeForAsset(String startDate, String endDate, AssetDb asset);
-		Task UpdateDatabaseDailyOhlcAsync(CollectedDailyOhlcDto[] ohlcsDto);
+		DailyOhlcDto[] ScrapeForAsset(String startDate, String endDate, AssetDb asset);
+		Task UpdateDatabaseDailyOhlcAsync(DailyOhlcDto[] ohlcsDto);
 	}
 }

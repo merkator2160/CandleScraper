@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace CandleScraper.Database.Repositories
 {
-	public class OhlcRepository : MongoRepositoryBase<OhlcDb>, IOhlcRepository
+	public class OhlcRepository : MongoRepositoryBase<DailyOhlcDb>, IOhlcRepository
 	{
-		private readonly IMongoCollection<OhlcDb> _collection;
+		private readonly IMongoCollection<DailyOhlcDb> _collection;
 
 
 		public OhlcRepository(IDataContext context) : base(context.Ohlcs)
@@ -19,7 +19,7 @@ namespace CandleScraper.Database.Repositories
 
 
 		// IOhlcRepository ////////////////////////////////////////////////////////////////////////
-		public async Task<OhlcDb[]> GetCryptoDailyOhlcFilteredAsync(StatDateFilterDb filter)
+		public async Task<DailyOhlcDb[]> GetCryptoDailyOhlcFilteredAsync(GetCryptoDailyOhlcFilterDb filter)
 		{
 			return (await _collection.AsQueryable()
 				.Where(p => p.AssetId.Equals(filter.AssetId)

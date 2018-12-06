@@ -1,4 +1,5 @@
-﻿using CandleScraper.Core.Consts;
+﻿using AutoMapper;
+using CandleScraper.Core.Consts;
 using CandleScraper.Core.Helpers;
 using CandleScraper.Database.Interfaces;
 using CandleScraper.Database.Models.Filters;
@@ -6,10 +7,10 @@ using CandleScraper.Database.Models.Storage;
 using CandleScraper.Services.Interfaces;
 using CandleScraper.Services.Models;
 using HtmlAgilityPack;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,80 +19,64 @@ namespace CandleScraper.Services
 	public class OhlcUpdaterService : IOhlcUpdaterService
 	{
 		private readonly IRepositoryBundle _repositoryBundle;
+		private readonly IMapper _mapper;
 
 
-		public OhlcUpdaterService(IRepositoryBundle repositoryBundle)
+		public OhlcUpdaterService(IRepositoryBundle repositoryBundle, IMapper mapper)
 		{
 			_repositoryBundle = repositoryBundle;
+			_mapper = mapper;
 		}
 
 
 		// IOhlcUpdaterService ////////////////////////////////////////////////////////////////////
-		public CollectedDailyOhlcDto[] ScrapeForAsset(String startDate, String endDate, AssetDb asset)
+		public DailyOhlcDto[] ScrapeForAsset(String startDate, String endDate, AssetDb asset)
 		{
 			var newCryptoDailyOhlcDbList = new List<CollectedDailyOhlcDto>();
 
 			if(!TryGetPage($"https://coinmarketcap.com/currencies/{asset.Slug}/historical-data/?start={startDate}&end={endDate}", out var htmlDoc))
-				return newCryptoDailyOhlcDbList.ToArray();
+				return new DailyOhlcDto[] { };
 
 			var coinSummary = CollectCoinSummary(htmlDoc);
 			var historicalData = CollectHistoricalData(htmlDoc);
 
 			foreach(var x in historicalData)
 			{
-				newCryptoDailyOhlcDbList.Add(new CollectedDailyOhlcDto()
+				if(x.IsProperlyCollected)
 				{
-					AssetId = asset.Id,
-					AssetName = asset.Name,
-					CoinSummary = coinSummary,
-					HistoricalData = x
-				});
-			}
-
-			return newCryptoDailyOhlcDbList.ToArray();
-		}
-		public async Task UpdateDatabaseDailyOhlcAsync(CollectedDailyOhlcDto[] ohlcsDto)
-		{
-			var newOrderedCryptoDailyOhlcDb = ohlcsDto.OrderBy(p => p.HistoricalData.TimeOpen).ToArray();
-
-			var workingStep = 100;
-			for(var i = 0; i < newOrderedCryptoDailyOhlcDb.Length; i = i + workingStep)
-			{
-				var cryptoOhlcs = newOrderedCryptoDailyOhlcDb.Skip(i).Take(workingStep).ToArray();
-				foreach(var x in cryptoOhlcs)
-				{
-					if(!x.IsProperlyCollected)
-						continue;
-
-					var existingOhlc = await _repositoryBundle.Ohlcs.GetCryptoDailyOhlcFilteredAsync(new StatDateFilterDb()
+					newCryptoDailyOhlcDbList.Add(new CollectedDailyOhlcDto()
 					{
-						AssetId = x.AssetId,
-						TimeOpenStart = x.HistoricalData.TimeOpen.Value,
-						TimeOpenEnd = x.HistoricalData.TimeOpen.Value + 1.DaysToMs() - 1
+						AssetId = asset.Id,
+						AssetName = asset.Name,
+						CoinSummary = coinSummary,
+						HistoricalData = x
 					});
-
-					if(existingOhlc != null && existingOhlc.Length == 0)
-					{
-						await _repositoryBundle.Ohlcs.AddAsync(new OhlcDb()
-						{
-							AssetId = x.AssetId,
-							TimeOpen = x.HistoricalData.TimeOpen.Value,
-							Open = x.HistoricalData.Open.Value,
-							High = x.HistoricalData.High.Value,
-							Low = x.HistoricalData.Low.Value,
-							Close = x.HistoricalData.Close.Value,
-							Volume = x.HistoricalData.Volume.Value,
-							MarketCap = x.HistoricalData.MarketCap.Value,
-							CirculatingSupply = x.CoinSummary.CirculatingSupply,
-							TotalSupply = x.CoinSummary.TotalSupply,
-							MaxSupply = x.CoinSummary.MaxSupply
-						});
-#if DEBUG
-						Console.WriteLine($"Added new OHLC for Currency: {x.AssetName} and TimeOpen: {x.HistoricalData.TimeOpen.Value.FromPosixTimeMs():G}");
-#endif
-					}
 				}
 			}
+
+			return _mapper.Map<DailyOhlcDto[]>(newCryptoDailyOhlcDbList);
+		}
+		public async Task UpdateDatabaseDailyOhlcAsync(DailyOhlcDto[] ohlcs)
+		{
+			var ohlcDbToAdd = new List<DailyOhlcDb>();
+			foreach(var x in ohlcs)
+			{
+				var existingOhlc = await _repositoryBundle.Ohlcs.GetCryptoDailyOhlcFilteredAsync(new GetCryptoDailyOhlcFilterDb()
+				{
+					AssetId = new ObjectId(x.AssetId),
+					TimeOpenStart = x.TimeOpen,
+					TimeOpenEnd = x.TimeOpen + 1.DaysToMs() - 1
+				});
+				if(existingOhlc != null && existingOhlc.Length == 0)
+				{
+					ohlcDbToAdd.Add(_mapper.Map<DailyOhlcDb>(x));
+
+					//Console.WriteLine($"Added new OHLC for Currency: {x.AssetName} and TimeOpen: {x.TimeOpen.FromPosixTimeMs():G}");
+				}
+			}
+
+			if(ohlcDbToAdd.Count > 0)
+				await _repositoryBundle.Ohlcs.AddRangeAsync(ohlcDbToAdd);
 		}
 
 

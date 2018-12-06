@@ -28,7 +28,7 @@ namespace CandleScraper.Database
 
 		// IDataContext //////////////////////////////////////////////////////////////////////
 		public IMongoCollection<AssetDb> Assets => Database.GetCollection<AssetDb>("Assets");
-		public IMongoCollection<OhlcDb> Ohlcs => Database.GetCollection<OhlcDb>("Ohlcs");
+		public IMongoCollection<DailyOhlcDb> Ohlcs => Database.GetCollection<DailyOhlcDb>("Ohlcs");
 
 
 		// IMongoManagement ///////////////////////////////////////////////////////////////////////
