@@ -71,7 +71,7 @@ namespace CandleScraper.Services
 				{
 					ohlcDbToAdd.Add(_mapper.Map<DailyOhlcDb>(x));
 
-					//Console.WriteLine($"Added new OHLC for Currency: {x.AssetName} and TimeOpen: {x.TimeOpen.FromPosixTimeMs():G}");
+					Console.WriteLine($"Added new OHLC for Currency: {x.AssetName} and TimeOpen: {x.TimeOpen.FromPosixTimeMs():G}");
 				}
 			}
 

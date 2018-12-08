@@ -23,7 +23,7 @@ namespace CandleScraper
 		// FUNCTIONS ////////////////////////////////////////////////////////////////////////////////////
 		public async Task RunAsync()
 		{
-			//await CollectCryptoCurrencyAssetsAsync();
+			await CollectCryptoCurrencyAssetsAsync();
 			await ScrapeOhlcsAsync();
 		}
 		private async Task CollectCryptoCurrencyAssetsAsync()
