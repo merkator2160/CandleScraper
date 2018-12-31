@@ -2,7 +2,7 @@
 using CandleScraper.Core.AutoMapper;
 using Xunit;
 
-namespace IntegrationTests.AutoMapper
+namespace UnitTests.AutoMapper
 {
 	public class AutoMapperTest
 	{
