@@ -1,5 +1,4 @@
-﻿using CandleScraper.Database.Interfaces;
-using CandleScraper.Database.Models.Config;
+﻿using CandleScraper.Database.Models.Config;
 using CandleScraper.Database.Models.Storage;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
@@ -9,7 +8,7 @@ using System.Reflection;
 
 namespace CandleScraper.Database
 {
-	public class DataContext : IDataContext, IMongoManagement
+	public class DataContext
 	{
 		private readonly MongoDbConfig _config;
 
@@ -18,21 +17,21 @@ namespace CandleScraper.Database
 		{
 			RegisterMappings();
 		}
-		public DataContext(IMongoClient mongoServerClient, MongoDbConfig config)
+		public DataContext(IMongoClient mongoClient, MongoDbConfig config)
 		{
 			_config = config;
-			Server = mongoServerClient;
-			Database = Server.GetDatabase(config.DatabaseName);
+			Client = mongoClient;
+			Database = Client.GetDatabase(config.DatabaseName);
 		}
 
 
-		// IDataContext //////////////////////////////////////////////////////////////////////
+		// ENTITIES ///////////////////////////////////////////////////////////////////////////////
 		public IMongoCollection<AssetDb> Assets => Database.GetCollection<AssetDb>("Assets");
 		public IMongoCollection<DailyOhlcDb> Ohlcs => Database.GetCollection<DailyOhlcDb>("Ohlcs");
 
 
-		// IMongoManagement ///////////////////////////////////////////////////////////////////////
-		public IMongoClient Server { get; }
+		// SERVER /////////////////////////////////////////////////////////////////////////////////
+		public IMongoClient Client { get; }
 		public IMongoDatabase Database { get; }
 
 

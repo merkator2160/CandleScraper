@@ -11,7 +11,7 @@ namespace CandleScraper.Database.Repositories
 		private readonly IMongoCollection<AssetDb> _collection;
 
 
-		public AssetRepository(IDataContext context) : base(context.Assets)
+		public AssetRepository(DataContext context) : base(context.Assets)
 		{
 			_collection = context.Assets;
 		}

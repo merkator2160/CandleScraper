@@ -12,7 +12,7 @@ namespace CandleScraper.Database.Repositories
 		private readonly IMongoCollection<DailyOhlcDb> _collection;
 
 
-		public OhlcRepository(IDataContext context) : base(context.Ohlcs)
+		public OhlcRepository(DataContext context) : base(context.Ohlcs)
 		{
 			_collection = context.Ohlcs;
 		}

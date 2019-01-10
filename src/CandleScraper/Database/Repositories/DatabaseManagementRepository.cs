@@ -7,19 +7,19 @@ namespace CandleScraper.Database.Repositories
 {
 	public class DatabaseManagementRepository : IDatabaseManagementRepository
 	{
-		private readonly IMongoManagement _mongoManagement;
+		private readonly DataContext _context;
 
 
-		public DatabaseManagementRepository(IMongoManagement mongoManagement)
+		public DatabaseManagementRepository(DataContext context)
 		{
-			_mongoManagement = mongoManagement;
+			_context = context;
 		}
 
 
 		// IDatabaseManagementRepository //////////////////////////////////////////////////////////
 		public String[] GetAllCollections()
 		{
-			using(var collections = _mongoManagement.Database.ListCollections())
+			using(var collections = _context.Database.ListCollections())
 			{
 				var collectionList = collections.ToList();
 				return collectionList.Select(x => x["name"].ToString()).ToArray();
