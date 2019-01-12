@@ -7,7 +7,7 @@ namespace UnitTests.AutoMapper
 	public class AutoMapperTest
 	{
 		[Fact]
-		public void PandaConfigurationTest()
+		public void AutomapperConfigurationTest()
 		{
 			var mapperConfiguration = new MapperConfiguration(cfg =>
 			{

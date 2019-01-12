@@ -35,7 +35,7 @@ namespace CandleScraper.Database.Repositories
 		}
 		public async Task<TEntity> GetAsync(ObjectId id)
 		{
-			return await (await _collection.FindAsync(p => p.Id.Equals(id))).FirstOrDefaultAsync();
+			return await _collection.Find(p => p.Id.Equals(id)).FirstOrDefaultAsync();
 		}
 		public TEntity[] GetAll()
 		{
@@ -43,7 +43,7 @@ namespace CandleScraper.Database.Repositories
 		}
 		public async Task<TEntity[]> GetAllAsync()
 		{
-			return (await (await _collection.FindAsync(FilterDefinition<TEntity>.Empty)).ToListAsync()).ToArray();
+			return (await _collection.Find(FilterDefinition<TEntity>.Empty).ToListAsync()).ToArray();
 		}
 		public TEntity[] GetChunked(Int32 offset, Int32 amount)
 		{

@@ -20,7 +20,10 @@ namespace CandleScraper.Database.Repositories
 		// IAssetRepository ///////////////////////////////////////////////////////////////////////
 		public async Task<AssetDb> GetByCoinMarketCapAssetIdAsync(Int64 id)
 		{
-			return await (await _collection.FindAsync(p => p.CoinMarketCapAssetId == id)).FirstOrDefaultAsync();
+			using(var cursor = await _collection.FindAsync(p => p.CoinMarketCapAssetId == id))
+			{
+				return await cursor.FirstOrDefaultAsync();
+			}
 		}
 	}
 }
