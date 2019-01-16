@@ -9,19 +9,19 @@ namespace CandleScraper.Database.Repositories
 {
 	public class OhlcRepository : MongoRepositoryBase<DailyOhlcDb>, IOhlcRepository
 	{
-		private readonly IMongoCollection<DailyOhlcDb> _collection;
+		private readonly DataContext _context;
 
 
 		public OhlcRepository(DataContext context) : base(context.Ohlcs)
 		{
-			_collection = context.Ohlcs;
+			_context = context;
 		}
 
 
 		// IOhlcRepository ////////////////////////////////////////////////////////////////////////
 		public async Task<DailyOhlcDb[]> GetCryptoDailyOhlcFilteredAsync(GetCryptoDailyOhlcFilterDb filter)
 		{
-			return (await _collection.AsQueryable()
+			return (await _context.Ohlcs.AsQueryable()
 				.Where(p => p.AssetId.Equals(filter.AssetId)
 							&& p.TimeOpen >= filter.TimeOpenStart
 							&& p.TimeOpen < filter.TimeOpenEnd)
