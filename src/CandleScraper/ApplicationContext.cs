@@ -34,11 +34,11 @@ namespace CandleScraper
 				var assetUpdaterService = scope.Resolve<IAssetUpdaterService>();
 				var cryptoMaps = await assetUpdaterService.CollectCryptoCurrencyMapAsync();
 
-				const Int32 chankSize = 300;
+				const Int32 chunkSize = 300;
 				var ids = cryptoMaps.Select(p => p.Id).ToArray();
-				for(var i = 0; i < ids.Length; i = i + chankSize)     // Must be chuncked because request URL gets too long with all id values
+				for(var i = 0; i < ids.Length; i = i + chunkSize)     // Must be chunked because request URL gets too long with all id values
 				{
-					var chunkedIds = ids.Skip(i).Take(chankSize).ToArray();
+					var chunkedIds = ids.Skip(i).Take(chunkSize).ToArray();
 					var assets = await assetUpdaterService.CollectCryptoCurrencyAssetInfoAsync(chunkedIds);
 					await assetUpdaterService.AddOrUpdateDatabaseAssetsAsync(assets);
 
