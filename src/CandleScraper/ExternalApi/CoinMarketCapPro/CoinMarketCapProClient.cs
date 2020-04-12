@@ -65,7 +65,7 @@ namespace CandleScraper.ExternalApi.CoinMarketCapPro
 		/// Returns a paginated list of all cryptocurrencies by CoinMarketCap ID. 
 		/// </summary>
 		/// <returns></returns>
-		public async Task<CmcpCryptocurrencyMapApi> GetCryptocurrencyMapAsync(GetCryptocurrencyMapRequestApi request)
+		public async Task<CmcpCryptocurrencyMapApi> GetCryptoCurrencyMapAsync(GetCryptocurrencyMapRequestApi request)
 		{
 			var urlBuilder = new StringBuilder();
 			urlBuilder.Append($"{_config.BaseUri}/v1/cryptocurrency/map");
@@ -97,9 +97,9 @@ namespace CandleScraper.ExternalApi.CoinMarketCapPro
 		/// Returns all static metadata for one or more cryptocurrencies including name, symbol, logo, and its various registered URLs.
 		/// </summary>
 		/// <param name="id">One or more CoinMarketCap cryptocurrency IDs. Example: "1,2"</param>
-		public async Task<CmcpCryptocurrencyInfoApi> GetCryptocurrencyInfoAsync(Int64[] id)
+		public async Task<CmcpCryptocurrencyInfoApi> GetCryptoCurrencyInfoAsync(Int64[] id)
 		{
-			return await GetCryptocurrencyInfoAsync(id, null);
+			return await GetCryptoCurrencyInfoAsync(id, null);
 		}
 
 		/// <summary>
@@ -107,7 +107,7 @@ namespace CandleScraper.ExternalApi.CoinMarketCapPro
 		/// </summary>
 		/// <param name="id">One or more CoinMarketCap cryptocurrency IDs. Example: "1,2"</param>
 		/// <param name="symbol">Alternatively pass one or more cryptocurrency symbols. Example: "BTC,ETH". At least one "id" or "symbol" is required.</param>
-		public async Task<CmcpCryptocurrencyInfoApi> GetCryptocurrencyInfoAsync(Int64[] id, String[] symbol)
+		public async Task<CmcpCryptocurrencyInfoApi> GetCryptoCurrencyInfoAsync(Int64[] id, String[] symbol)
 		{
 			var urlBuilder = new StringBuilder();
 			urlBuilder.Append($"{_config.BaseUri}/v1/cryptocurrency/info?");
@@ -135,7 +135,7 @@ namespace CandleScraper.ExternalApi.CoinMarketCapPro
 			}
 		}
 
-		public async Task<CmcpCryptocurrencyListingsLatestApi> GetCryptocurrencyListingLatest(GetCryptocurrencyListingsLatestRequestApi request)
+		public async Task<CmcpCryptocurrencyListingsLatestApi> GetCryptoCurrencyListingLatest(GetCryptocurrencyListingsLatestRequestApi request)
 		{
 			var urlBuilder = new StringBuilder();
 			urlBuilder.Append($"{_config.BaseUri}/v1/cryptocurrency/listings/latest");

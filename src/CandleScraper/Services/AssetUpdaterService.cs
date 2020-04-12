@@ -57,7 +57,7 @@ namespace CandleScraper.Services
 		{
 			var assetList = new List<AssetDb>();
 
-			var cryptoInfos = await _coinMarketCapProClient.GetCryptocurrencyInfoAsync(cryptoMapIds);
+			var cryptoInfos = await _coinMarketCapProClient.GetCryptoCurrencyInfoAsync(cryptoMapIds);
 			foreach(var x in cryptoMapIds)
 			{
 				var cryptoInfo = cryptoInfos.Data[x.ToString()];
@@ -95,7 +95,7 @@ namespace CandleScraper.Services
 
 			while(true)
 			{
-				var lastExtracted = await _coinMarketCapProClient.GetCryptocurrencyMapAsync(request);
+				var lastExtracted = await _coinMarketCapProClient.GetCryptoCurrencyMapAsync(request);
 				if(lastExtracted.Data == null || lastExtracted.Data.Length == 0)
 					break;
 

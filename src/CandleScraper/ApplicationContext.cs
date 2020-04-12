@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace CandleScraper
 {
-	internal class ApplicationContext : IDisposable
+	internal class ApplicationContext
 	{
 		private readonly ILifetimeScope _lifetimeScope;
 
@@ -79,13 +79,6 @@ namespace CandleScraper
 				.WithExecutionMode(ParallelExecutionMode.Default)
 				.WithDegreeOfParallelism(6)
 				.ForAll(ScrapeOhlcParallelLinqThread);
-		}
-
-
-		// IDisposable ////////////////////////////////////////////////////////////////////////////
-		public void Dispose()
-		{
-			_lifetimeScope?.Dispose();
 		}
 
 
